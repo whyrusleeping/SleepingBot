@@ -2,7 +2,7 @@ require 'cinch'
 
 bot = Cinch::Bot.new do
 	configure do |c|
-		c.nick 		= "SleepingBotTEST"
+		c.nick 		= "SleepingBot"
 		c.server 	= "irc.freenode.net"
 		c.verbose 	= true
 		c.channels	= ["#wsutech"]
@@ -10,6 +10,7 @@ bot = Cinch::Bot.new do
 		@autoop		= true
 		@master 	= "whyrusleeping"
 		@messages	= []
+		@meeting	= ""
 	end
 
 	on :join do |m|
@@ -26,20 +27,21 @@ bot = Cinch::Bot.new do
 	end
 
 	on :message do |m|
-		if(m.message == ".history2")
-			File.open("messlog.txt","w") do |f|
+		if(m.message == ".history")
+			File.open("/var/www/messlog.txt","w") do |f|
 				@messages.each do |me|
 					f.puts me
 				end
 			end
 			m.user.send "http://techclub.eecs.wsu.edu/messlog.txt"
-			#@messages.each do |me|
-			#	m.user.send me
-			#end
+		else if(m.message == ".meeting")
+			if(@meeting == nil)
+				m.reply "No set meeting time"
+			else
+				m.reply @meeting unless @meeting == ""
+			end
 		else
-			puts m.message
-			puts m.channel
-			puts m.user
+			#this is a problem i think, because im supposedly initializing it in the confiugure area
 			if(@messages == nil)
 				@messages = []
 			end
